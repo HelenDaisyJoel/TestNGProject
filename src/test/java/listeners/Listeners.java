@@ -2,7 +2,10 @@ package listeners;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.aventstack.extentreports.reporter.configuration.Theme;
+
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
@@ -14,6 +17,7 @@ import java.io.File;
 public class Listeners implements ITestListener {
     private ExtentReports extent;
     private ThreadLocal<ExtentTest> extentTest = new ThreadLocal<>();
+    public ExtentTest test;
 
     @Override
     public void onStart(ITestContext context) {
@@ -22,7 +26,7 @@ public class Listeners implements ITestListener {
         ExtentSparkReporter reporter = new ExtentSparkReporter(path);
         reporter.config().setReportName("Video Platform Test Results");
         reporter.config().setDocumentTitle("Automation Test Report");
-        
+        reporter.config().setTheme(Theme.DARK);        
         extent = new ExtentReports();
         extent.attachReporter(reporter);
         extent.setSystemInfo("Tester", "Helen");
@@ -31,13 +35,18 @@ public class Listeners implements ITestListener {
     @Override
     public void onTestStart(ITestResult result) {
         // Create test entry in report
-        ExtentTest test = extent.createTest(result.getMethod().getMethodName());
+        test = extent.createTest(result.getMethod().getMethodName());
         extentTest.set(test); // Set the current test in ThreadLocal
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
         extentTest.get().pass("Test passed");
+        test=extent.createTest(result.getName());
+        test.log(Status.PASS,"Testcase is Passed:"+result.getName());
+        
+        
+        
     }
 
     @Override
@@ -66,9 +75,13 @@ public class Listeners implements ITestListener {
                 extentTest.get().addScreenCaptureFromPath(filePath, result.getMethod().getMethodName());
             } else {
                 extentTest.get().fail("Screenshot file path is invalid or file does not exist.");
+                test.log(Status.FAIL,"Testcase is Failed:"+result.getName());
+                test.log(Status.FAIL,"Testcase is Failed cause id:"+result.getThrowable());
             }
         } else {
             extentTest.get().fail("Driver is null. Screenshot could not be captured.");
+            test.log(Status.FAIL,"Testcase is Failed:"+result.getName());
+            test.log(Status.FAIL,"Testcase is Failed cause id:"+result.getThrowable());
         }
     }
 

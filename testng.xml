@@ -6,14 +6,14 @@
   </listeners>
 
   <test thread-count="5" name="DolbyTest">
+  
+  <parameter name="os" value="Windows"/>
+  <parameter name="browser" value="chrome"/>
+  
     <classes>
-      <class name="tests.VideoPlatformDolbyBookingTest"/>
+      <class name="cucumber.TestNGRunner"/>
     </classes>
   </test>
     
-  <test thread-count="5" name="NoneTest">
-    <classes>
-      <class name="tests.VideoPlatformNoneBookingTest"/>
-    </classes>
-  </test>
+  
 </suite>

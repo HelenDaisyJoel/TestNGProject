@@ -1,5 +1,8 @@
 package pageObjects;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -8,9 +11,22 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import pageObjects.BasePage.ElementUtils;
+import testBase.BaseClass;
+
 public class VideoPlatformDolbyBookingPage extends BasePage{
 	protected WebDriver driver;
 	protected WebDriverWait wait;
+	
+	 public String userName = "admin@1st.com";
+	    public String password = "admin";
+	    public String orgName = "Test_Org";
+	    public String unitName = "Unit-01";
+	    
+	    protected By loginButton = By.xpath("(//button[normalize-space()='Log in'])[1]");
+	    protected By userNameField = By.xpath("(//input[@id='Input_Username'])[1]");
+	    protected By passwordField = By.xpath("(//input[@id='Input_Password'])[1]");
+	    protected By loginBtn = By.xpath("//button[@value='login']");
     
     private static final By SELECT_ENCODER = By.xpath("(//p[normalize-space()='Video Encoder'])[1]");
     private static final By ADD_ICON_ENCODER = By.xpath("//button[@title='Add Video Encoder']");
@@ -53,7 +69,9 @@ public class VideoPlatformDolbyBookingPage extends BasePage{
 
 	By Connector_ID=By.xpath("(//input[@id='connectorId'])[1]");
 	By Cluster_Name=By.xpath("(//div[@id='clusterName'])[1]");
-	By Select_Cluster=By.xpath("(//li[normalize-space()='Ashburn'])[1]");
+	By Select_Cluster=By.xpath("(//li[normalize-space()='Auto'])[1]");
+//	By Select_Cluster=By.xpath("(//li[normalize-space()='+ClusterName+'])[1]");
+//	By dynamicOptionLocator = By.xpath(String.format("//li[normalize-space()='%s']", optionText));
 	By Description_Name=By.xpath("(//input[@id='Description'])[1]");
 
 //	Tooltip
@@ -82,17 +100,42 @@ public class VideoPlatformDolbyBookingPage extends BasePage{
 	By ChangeEndTime=By.xpath("//*[@id=\"add-new\"]/div/div/div/form/div[4]/div/div[2]/button");
 	By SelectNextDate=By.xpath("//button[normalize-space()='31']");
 	
-    public VideoPlatformDolbyBookingPage(WebDriver driver) {
+	public VideoPlatformDolbyBookingPage(WebDriver driver) {
         super(driver);
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, 30);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     }
  /////////				ENCODER TEST           ////////
+	
+//	 public void navigateToVideoPlatform(String orgName, String unitName) throws InterruptedException {
+//	        Thread.sleep(1000);
+//	        driver.findElement(hamburgerMenu).click();
+//	        Thread.sleep(2000);
+//	        driver.findElement(selectOrgDropdown).click();
+//	        selectDropdownOption(orgName);
+//	        Thread.sleep(1000);
+//	        driver.findElement(selectUnitDropdown).click();
+//	        selectDropdownOption(unitName);
+//	    }
     
-    public void Select_Encoder() throws InterruptedException {
+	 public void login(String userName, String password) throws InterruptedException {
+	        Thread.sleep(1000);
+	        driver.findElement(loginButton).click();
+	        Thread.sleep(1000);
+	        wait.until(ExpectedConditions.visibilityOfElementLocated(userNameField)).sendKeys(userName);
+	        // Wait for the password field to be present and visible
+	        wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField)).sendKeys(password);
+	        // Wait for the login button to be present and clickable
+	        wait.until(ExpectedConditions.elementToBeClickable(loginBtn)).click();
+	    }
+	
+	
+	public void Select_Encoder() throws InterruptedException {
     	Thread.sleep(2000);
         driver.findElement(SELECT_ENCODER).click();
     }
+    
+    
 
     public void createEncoder(String encoderName, String encoderID) throws InterruptedException {
     	 // Wait for the ADD_ICON_ENCODER to become enabled
@@ -238,11 +281,29 @@ public class VideoPlatformDolbyBookingPage extends BasePage{
         Thread.sleep(2000);
         driver.findElement(ADD_Button).click();
     }
+    protected void selectDropdownOption(String optionText) throws InterruptedException {
+        // Wait for the dropdown options to be available
+        Thread.sleep(2000);
+
+        // Fetch all options within the dropdown
+        List<WebElement> allOptions = driver.findElements(By.xpath("//li[@role='option']"));
+        Thread.sleep(1000);
+
+        // Iterate through the list of options
+        for (WebElement option : allOptions) {
+            // Check if the option text matches the provided optionText
+            if (option.getText().equals(optionText)) {
+                // Click the matching option
+                option.click();
+                break;
+            }
+        }
+    }
     
     
     private void selectTimeOption(String timeOption) throws InterruptedException {
         driver.findElement(By.xpath("(//button[@aria-label='Choose time, selected time is 12:00 AM'])[1]")).click(); // Update if different locator for start/end margin
-        WebDriverWait wait = new WebDriverWait(driver, 10);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement timeElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@role='option' and @aria-label='" + timeOption + "']")));
         JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", timeElement);
@@ -271,13 +332,37 @@ public class VideoPlatformDolbyBookingPage extends BasePage{
 /////////				CHANNEL TEST           ////////
     
     public void Select_Channel() throws InterruptedException {
-		Thread.sleep(3000);
+		Thread.sleep(4000);
 		driver.findElement(Select_Channel).click();
 	
 		}
 
-//Create a new Video Channel -Testcase 1
-	public void CreateDolby_Channel(String DisplayName, String Vendor, String Angle,String ConnectorID, String ClusterName, String Description ) throws InterruptedException {
+    public void CreateDolby_Channel(String displayName, String vendor, String angle, int connectorID, String clusterName, String description) throws InterruptedException {
+        ElementUtils.waitForElementToBeEnabled(driver, ADD_ICON_CHANNEL, 600, 2000);
+
+        WebElement icon = driver.findElement(ADD_ICON_CHANNEL);
+        icon.click();
+
+        driver.findElement(Display_Name1).sendKeys(displayName);
+        Thread.sleep(2000);
+        selectDropdownOption(Select_Vendor, Select_Dolby);
+        Thread.sleep(2000);
+        selectDropdownOption(Angle_Name, Select_Angle);
+        Thread.sleep(2000);
+        driver.findElement(Connector_ID).sendKeys(String.valueOf(connectorID));  // Convert int to String
+        Thread.sleep(1000);
+
+        driver.findElement(Cluster_Name).click();
+        selectDropdownOption(clusterName,Select_Cluster);
+        Thread.sleep(2000);
+        driver.findElement(Description_Name).sendKeys(description);
+        Thread.sleep(2000);
+        scrollDown();
+        driver.findElement(ADD_Button).click();
+    }
+    
+    
+public void CreateDolby_Channel1(String DisplayName, String Vendor, String Angle,String ConnectorID, String ClusterName, String Description ) throws InterruptedException {
 		
 //		Thread.sleep(5000);	
 //		WebElement icon = wait.until(ExpectedConditions.visibilityOfElementLocated(ADD_ICON_CHANNEL));
@@ -305,6 +390,28 @@ public class VideoPlatformDolbyBookingPage extends BasePage{
 		driver.findElement(ADD_Button).click();
 		
 	}
+protected void selectDropdownOption(String optionText, By dropdownLocator) throws InterruptedException {
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));  // 10 seconds timeout
+    
+    // Wait for the dropdown to be clickable and click it
+    WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(dropdownLocator));
+    dropdown.click();
+    
+    // Wait for the options to be visible
+    wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//li[@role='option']")));
+    
+    // Fetch all options within the dropdown
+    List<WebElement> allOptions = driver.findElements(By.xpath("//li[@role='option']"));
+    
+    // Iterate through the list of options
+    for (WebElement option : allOptions) {
+        if (option.getText().trim().equalsIgnoreCase(optionText.trim())) {
+            option.click();
+            break;
+        }
+    }
+}
+
 	
 public void CreateNone_Channel(String DisplayName, String Vendor, String Angle,String decoderName, String Description, String ForeignIDValue, String ForeignIDType ) throws InterruptedException {
 		
@@ -383,41 +490,77 @@ public void CreateNone_Channel(String DisplayName, String Vendor, String Angle,S
 		}
 
 	
-	public void createBooking(String sourceName, String channelName) throws InterruptedException {
-//	    Thread.sleep(3000);    
-//	    driver.findElement(ADD_ICON_BOOKING).click();
-		ElementUtils.waitForElementToBeEnabled(driver, ADD_ICON_BOOKING, 600, 2000);
+//	public void createBooking(String bookingSourceName, String bookingChannelName) throws InterruptedException {
+//	    // Scroll into view
+//	    WebElement icon = driver.findElement(ADD_ICON_BOOKING);
+//	    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", icon);
+//	    Thread.sleep(500);
+//
+//	    // Click using JavaScript
+//	    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", icon);
+//
+//	    // Proceed with the rest of the method
+//	    driver.findElement(SourceName).click();
+//	    Thread.sleep(1000);
+//	    waitForDropdownOptions();
+//	    Thread.sleep(1000);
+//	    selectDropdownOption(bookingSourceName);
+//	    Thread.sleep(1000);
+//	    driver.findElement(ChannelName).click();
+//	    Thread.sleep(1000);
+//	    waitForDropdownOptions();
+//	    Thread.sleep(1000);
+//	    selectDropdownOption(bookingChannelName);
+//
+//	    // Select start and end times
+//	    Thread.sleep(1000);
+//	    driver.findElement(StartTime).click();
+//	    Thread.sleep(1000);
+//	    driver.findElement(EndTime).click();
+//	    Thread.sleep(1000);
+//	    driver.findElement(ChangeEndTime).click();
+//	    driver.findElement(SelectNextDate).click();
+//	    
+//	    Thread.sleep(2000);
+//	    driver.findElement(ADD_Button).click();
+//	}
+	
+	public void createBooking(String bookingSourceName, String bookingChannelName) throws InterruptedException {
+	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // Proceed with the rest of the method
-        WebElement icon = driver.findElement(ADD_ICON_BOOKING);
-        icon.click();
-	    driver.findElement(SourceName).click();
-	    Thread.sleep(1000);
+	    // Wait for element to be visible and clickable
+	    WebElement addIconBooking = wait.until(ExpectedConditions.visibilityOfElementLocated(ADD_ICON_BOOKING));
+	    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", addIconBooking);
+	    wait.until(ExpectedConditions.elementToBeClickable(addIconBooking)).click();
+
+	    // Continue with other interactions
+	    WebElement sourceElement = wait.until(ExpectedConditions.visibilityOfElementLocated(SourceName));
+	    sourceElement.click();
 	    waitForDropdownOptions();
-	    Thread.sleep(1000);
-	    selectDropdownOption(sourceName);
-	    Thread.sleep(1000);
-	    driver.findElement(ChannelName).click();
-	    Thread.sleep(1000);
-	    // Select source
+	    selectDropdownOption(bookingSourceName);
+
+	    WebElement channelElement = wait.until(ExpectedConditions.visibilityOfElementLocated(ChannelName));
+	    channelElement.click();
 	    waitForDropdownOptions();
-	    Thread.sleep(1000);
-	    selectDropdownOption(channelName);
-	    // Select start and end times
-	    Thread.sleep(1000);
-	    driver.findElement(StartTime).click();
-	    Thread.sleep(1000);
-	    driver.findElement(EndTime).click();
-	    Thread.sleep(1000);
-	    driver.findElement(ChangeEndTime).click();
-	    driver.findElement(SelectNextDate).click();
-	    
-	    Thread.sleep(2000);
-	    driver.findElement(ADD_Button).click();
+	    selectDropdownOption(bookingChannelName);
+
+	    WebElement startTimeElement = wait.until(ExpectedConditions.visibilityOfElementLocated(StartTime));
+	    startTimeElement.click();
+	    WebElement endTimeElement = wait.until(ExpectedConditions.visibilityOfElementLocated(EndTime));
+	    endTimeElement.click();
+	    WebElement changeEndTimeElement = wait.until(ExpectedConditions.visibilityOfElementLocated(ChangeEndTime));
+	    changeEndTimeElement.click();
+	    WebElement selectNextDateElement = wait.until(ExpectedConditions.visibilityOfElementLocated(SelectNextDate));
+	    selectNextDateElement.click();
+
+	    WebElement addButtonElement = wait.until(ExpectedConditions.visibilityOfElementLocated(ADD_Button));
+	    addButtonElement.click();
 	}
+
+
 	
 	private void waitForDropdownOptions() {
-	    WebDriverWait wait = new WebDriverWait(driver, 20);
+	    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 	    wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//li[@role='option']")));
 	}
 

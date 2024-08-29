@@ -14,8 +14,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
+import testBase.BaseClass;
 
 public class BasePage {
 	protected WebDriver driver;
@@ -26,10 +28,10 @@ public class BasePage {
     public String orgName = "Test_Org";
     public String unitName = "Unit-01";
 
-    private By loginButton = By.xpath("(//button[normalize-space()='Log in'])[1]");
-    private By userNameField = By.xpath("(//input[@id='Input_Username'])[1]");
-    private By passwordField = By.xpath("(//input[@id='Input_Password'])[1]");
-    private By loginBtn = By.xpath("//button[@value='login']");
+    protected By loginButton = By.xpath("(//button[normalize-space()='Log in'])[1]");
+    protected By userNameField = By.xpath("(//input[@id='Input_Username'])[1]");
+    protected By passwordField = By.xpath("(//input[@id='Input_Password'])[1]");
+    protected By loginBtn = By.xpath("//button[@value='login']");
     private By hamburgerMenu = By.xpath("(//button[@type='button'])[2]");
     private By selectOrgDropdown=By.xpath("(//div[@class='MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall css-1b27kz4-MuiInputBase-root-MuiOutlinedInput-root'])[1]");
 //    private By selectOrgDropdown = By.xpath("(//div[@class='MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-sizeSmall css-niyuos'])[1]");
@@ -50,19 +52,23 @@ public class BasePage {
     
     public BasePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, 10);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    }
+    
+    public WebDriver getDriver() {
+        return driver;
     }
 
-    public void login(String userName, String password) throws InterruptedException {
-        Thread.sleep(1000);
-        driver.findElement(loginButton).click();
-        Thread.sleep(1000);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(userNameField)).sendKeys(userName);
-        // Wait for the password field to be present and visible
-        wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField)).sendKeys(password);
-        // Wait for the login button to be present and clickable
-        wait.until(ExpectedConditions.elementToBeClickable(loginBtn)).click();
-    }
+//    public void login(String userName, String password) throws InterruptedException {
+//        Thread.sleep(1000);
+//        driver.findElement(loginButton).click();
+//        Thread.sleep(1000);
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(userNameField)).sendKeys(userName);
+//        // Wait for the password field to be present and visible
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField)).sendKeys(password);
+//        // Wait for the login button to be present and clickable
+//        wait.until(ExpectedConditions.elementToBeClickable(loginBtn)).click();
+//    }
 
     public static class ElementUtils {
 
@@ -100,11 +106,18 @@ public class BasePage {
     }
 
     protected void selectDropdownOption(String optionText) throws InterruptedException {
-    	Thread.sleep(2000);
-        List<WebElement> allOptions = driver.findElements(By.xpath("(//li[@role='option'])"));
+        // Wait for the dropdown options to be available
+        Thread.sleep(2000);
+
+        // Fetch all options within the dropdown
+        List<WebElement> allOptions = driver.findElements(By.xpath("//li[@role='option']"));
         Thread.sleep(1000);
+
+        // Iterate through the list of options
         for (WebElement option : allOptions) {
+            // Check if the option text matches the provided optionText
             if (option.getText().equals(optionText)) {
+                // Click the matching option
                 option.click();
                 break;
             }

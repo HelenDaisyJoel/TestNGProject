@@ -5,18 +5,16 @@
     <listener class-name="listeners.Listeners"/>
   </listeners>
   <test thread-count="5" parallel="tests" name="DolbyTest(failed)">
+    <parameter name="os" value="Windows"/>
+    <parameter name="browser" value="chrome"/>
     <classes>
-      <class name="tests.VideoPlatformDolbyBookingTest">
+      <class name="cucumber.TestNGRunner">
         <methods>
-          <include name="testBooking"/>
-          <include name="testEncoder"/>
-          <include name="tearDown"/>
-          <include name="testChannel"/>
-          <include name="testSource"/>
-          <include name="testDecoder"/>
-          <include name="setUp"/>
+          <include name="setUpClass"/>
+          <include name="runScenario" invocation-numbers="0"/>
+          <include name="tearDownClass"/>
         </methods>
-      </class> <!-- tests.VideoPlatformDolbyBookingTest -->
+      </class> <!-- cucumber.TestNGRunner -->
     </classes>
   </test> <!-- DolbyTest(failed) -->
 </suite> <!-- Failed suite [Suite] -->

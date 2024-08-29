@@ -52,7 +52,7 @@ public class samplePage {
     
     public samplePage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, 10);
+//        this.wait = new WebDriverWait(driver, 10);
     }
 /////////				ENCODER TEST           ////////
     

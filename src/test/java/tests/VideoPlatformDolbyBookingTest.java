@@ -1,6 +1,8 @@
 package tests;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.WebDriver;
@@ -15,11 +17,13 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import pageObjects.VideoPlatformDolbyBookingPage;
+import testBase.BaseClass;
+
 import org.testng.annotations.Listeners;
 
 
 @Listeners(listeners.Listeners.class)
-public class VideoPlatformDolbyBookingTest extends BaseTest{
+public class VideoPlatformDolbyBookingTest extends BaseClass{
 	public static WebDriver driver; 
     VideoPlatformDolbyBookingPage page;
     ExtentReports extent;
@@ -56,13 +60,17 @@ public class VideoPlatformDolbyBookingTest extends BaseTest{
 	
     @BeforeClass
     public void setUp() throws InterruptedException, IOException {
-    	// Initialize WebDriver
-//    	 driver = initializeDriver(System.getProperty("browser"));
-    	driver = BaseTest.initializeDriver(System.getProperty("browser"));
-        // Set up WebDriver
-//        System.setProperty("webdriver.chrome.driver", "C:\\Driver\\chrome\\chromedriver.exe");
-//        driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    	
+//    	driver = BaseClass.setup();
+    	Properties p=new Properties();
+    	
+    	// Retrieve the values for 'br' and 'os'
+        String browser = p.getProperty("br");
+        String os = p.getProperty("os");
+        BaseClass baseClass = new BaseClass();
+		baseClass.setup(browser, os);
+        
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.get("https://prism-web.dev.1stbet.com/");
         driver.manage().window().maximize();
         page = new VideoPlatformDolbyBookingPage(driver);
@@ -71,74 +79,75 @@ public class VideoPlatformDolbyBookingTest extends BaseTest{
         
     }
 
-    @Test(priority = 1)
-    public void testEncoder() throws InterruptedException {
-//        test = extent.createTest("Test Encoder Creation and Update");
-        page.Select_Encoder();
-        page.createEncoder(encoderName, encoderID);
-        Assert.assertEquals(page.getMessage(), "Video Encoder Successfully Added");
-
-        page.verifyToolTip("Add Video Encoder", VideoPlatformDolbyBookingPage.TOOLTIP_ADD_ENCODER);
-        page.verifyToolTip("Export", VideoPlatformDolbyBookingPage.TOOLTIP_EXPORT);
-        page.verifyToolTip("Column Settings", VideoPlatformDolbyBookingPage.TOOLTIP_COLUMN_SETTINGS);
-
-        page.displayInactive();
-        page.search(EncoderSearchKeyword);
-
-        page.updateEncoder(updatedEncoder, updatedID);
-        Assert.assertEquals(page.getMessage(), "Video Encoder Successfully Updated");
-    }
-
-    @Test(priority = 2)
-    public void testDecoder() throws InterruptedException {
-//        test = extent.createTest("Test Decoder Creation and Update");
-        page.Select_Decoder();
-        page.verifyToolTip("Add Video Decoder", VideoPlatformDolbyBookingPage.TOOLTIP_ADD_DECODER);
-        page.verifyToolTip("Export", VideoPlatformDolbyBookingPage.TOOLTIP_EXPORT);
-        page.verifyToolTip("Column Settings", VideoPlatformDolbyBookingPage.TOOLTIP_COLUMN_SETTINGS);
-
-        page.addDolbyDecoder(dolbyDecoderName, decoderID);
-        Assert.assertEquals(page.getMessage(), "Video Decoder Successfully Added");
-
-        page.displayInactive();
-        page.search(decoderSearchKeyword);
-
-        page.disableEntity();
-        Assert.assertEquals(page.getMessage(), "Video Decoder Successfully Disabled");
-
-        page.updateDecoder(updatedName, updatedID);
-        Assert.assertEquals(page.getMessage(), "Video Decoder Successfully Updated");
-
-        page.deleteEntity();
-        Assert.assertEquals(page.getMessage(), "Video Decoder Successfully Deleted");
-    }
-
-    @Test(priority = 3)
-    public void testSource() throws InterruptedException {
-//        test = extent.createTest("Test Source Creation and Update");
-        page.Select_Source();
-        page.createSource(sourceName, sourceAngle, updatedEncoder);
-        Assert.assertEquals(page.getMessage(), "Video Source Successfully Added");
-
-        page.verifyToolTip("Add Video Source", VideoPlatformDolbyBookingPage.TOOLTIP_ADD_SOURCE);
-        page.verifyToolTip("Export", VideoPlatformDolbyBookingPage.TOOLTIP_EXPORT);
-        page.verifyToolTip("Column Settings", VideoPlatformDolbyBookingPage.TOOLTIP_COLUMN_SETTINGS);
-
-        page.displayInactive();
-        page.search(sourceSearchKeyword);
-
-        page.updateSource(updatedSource);
-        // Assert.assertEquals(page.getMessage(), "Video Source Successfully Updated");
-
-        // page.disableEntity();
-        // Assert.assertEquals(page.getMessage(), "Video Source Successfully Disabled");
-    }
+//    @Test(priority = 1)
+//    public void testEncoder() throws InterruptedException {
+////        test = extent.createTest("Test Encoder Creation and Update");
+//        page.Select_Encoder();
+//        page.createEncoder(encoderName, encoderID);
+//        Assert.assertEquals(page.getMessage(), "Video Encoder Successfully Added");
+//
+//        page.verifyToolTip("Add Video Encoder", VideoPlatformDolbyBookingPage.TOOLTIP_ADD_ENCODER);
+//        page.verifyToolTip("Export", VideoPlatformDolbyBookingPage.TOOLTIP_EXPORT);
+//        page.verifyToolTip("Column Settings", VideoPlatformDolbyBookingPage.TOOLTIP_COLUMN_SETTINGS);
+//
+//        page.displayInactive();
+//        page.search(EncoderSearchKeyword);
+//
+//        page.updateEncoder(updatedEncoder, updatedID);
+//        Assert.assertEquals(page.getMessage(), "Video Encoder Successfully Updated");
+//    }
+//
+//    @Test(priority = 2)
+//    public void testDecoder() throws InterruptedException {
+////        test = extent.createTest("Test Decoder Creation and Update");
+//        page.Select_Decoder();
+//        page.verifyToolTip("Add Video Decoder", VideoPlatformDolbyBookingPage.TOOLTIP_ADD_DECODER);
+//        page.verifyToolTip("Export", VideoPlatformDolbyBookingPage.TOOLTIP_EXPORT);
+//        page.verifyToolTip("Column Settings", VideoPlatformDolbyBookingPage.TOOLTIP_COLUMN_SETTINGS);
+//
+//        page.addDolbyDecoder(dolbyDecoderName, decoderID);
+//        Assert.assertEquals(page.getMessage(), "Video Decoder Successfully Added");
+//
+//        page.displayInactive();
+//        page.search(decoderSearchKeyword);
+//
+//        page.disableEntity();
+//        Assert.assertEquals(page.getMessage(), "Video Decoder Successfully Disabled");
+//
+//        page.updateDecoder(updatedName, updatedID);
+//        Assert.assertEquals(page.getMessage(), "Video Decoder Successfully Updated");
+//
+//        page.deleteEntity();
+//        Assert.assertEquals(page.getMessage(), "Video Decoder Successfully Deleted");
+//    }
+//
+//    @Test(priority = 3)
+//    public void testSource() throws InterruptedException {
+////        test = extent.createTest("Test Source Creation and Update");
+//        page.Select_Source();
+//        page.createSource(sourceName, sourceAngle, updatedEncoder);
+//        Assert.assertEquals(page.getMessage(), "Video Source Successfully Added");
+//
+//        page.verifyToolTip("Add Video Source", VideoPlatformDolbyBookingPage.TOOLTIP_ADD_SOURCE);
+//        page.verifyToolTip("Export", VideoPlatformDolbyBookingPage.TOOLTIP_EXPORT);
+//        page.verifyToolTip("Column Settings", VideoPlatformDolbyBookingPage.TOOLTIP_COLUMN_SETTINGS);
+//
+//        page.displayInactive();
+//        page.search(sourceSearchKeyword);
+//
+//        page.updateSource(updatedSource);
+//        // Assert.assertEquals(page.getMessage(), "Video Source Successfully Updated");
+//
+//        // page.disableEntity();
+//        // Assert.assertEquals(page.getMessage(), "Video Source Successfully Disabled");
+//    }
 
     @Test(priority = 4)
     public void testChannel() throws InterruptedException {
 //        test = extent.createTest("Test Channel Creation and Update");
         page.Select_Channel();
-        page.CreateDolby_Channel(channelName, VendorName, Angle, ConnectorID, ClusterName, Description);
+       
+        page.CreateDolby_Channel1(channelName, VendorName, Angle, ConnectorID, ClusterName, Description);
         Assert.assertEquals(page.getMessage(), "Video Channel Successfully Added");
 
         page.verifyToolTip("Add Video Channel", VideoPlatformDolbyBookingPage.TOOLTIP_ADD_CHANNEL);

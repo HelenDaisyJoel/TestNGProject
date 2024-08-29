@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 import pageObjects.VideoPlatformDolbyBookingPage;
 import pageObjects.samplePage;
 
+import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +26,7 @@ public class SampleTest {
         driver = new ChromeDriver();
 
         // Set the implicit wait time
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
         // Open the desired URL
         driver.get("https://prism-web.preprod.1stbet.com/");

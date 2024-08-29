@@ -5,9 +5,10 @@ import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
 	    features = "src/test/java/cucumber",
-	    glue = "stepDefinition", // Just the package name, not the full path
+	    glue = {"stepDefinition", "BaseClass"}, // Just the package name, not the full path
 	    monochrome = true,
-	    plugin = {"html:target/cucumber-reports.html"}
+	    tags = "@tag2",
+	    plugin = {"html:target/cucumber-reports.html","json:target/cucumber.json"}
 	)
 	public class TestNGRunner extends AbstractTestNGCucumberTests {
 	
